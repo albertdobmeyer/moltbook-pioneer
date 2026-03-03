@@ -12,16 +12,16 @@ status:
   states:
     - id: ready
       label: Ready
-      icon: check-circle
-      color: green
+      icon: circle-check
+      color: "#22c55e"
     - id: not_setup
       label: Not Configured
-      icon: alert-circle
-      color: purple
+      icon: circle-help
+      color: "#a855f7"
     - id: error
       label: Error
-      icon: x-circle
-      color: red
+      icon: alert-triangle
+      color: "#ef4444"
   probes:
     - command: "test -f config/.env && echo ready"
       interval_seconds: 30

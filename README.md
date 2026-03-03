@@ -180,7 +180,7 @@ These three repos cover safe engagement with the OpenClaw/ClawHub/Moltbook ecosy
 | Repo | Layer | What It Does |
 |------|-------|-------------|
 | **[openclaw-vault](https://github.com/gitgoodordietrying/openclaw-vault)** | Runtime | Run agents safely. Hardened container with proxy-side API key injection, domain allowlisting, kill switch |
-| **[clawhub-lab](https://github.com/gitgoodordietrying/clawhub-lab)** | Development | Build skills safely. Offline linter, scanner, test framework, gated publishing pipeline |
+| **[clawhub-forge](https://github.com/gitgoodordietrying/clawhub-forge)** | Development | Build skills safely. Offline linter, scanner, test framework, gated publishing pipeline |
 | **moltbook-pioneer** | Social | Socialize safely. Research and safe participation in the Moltbook agentic social network (you are here) |
 
 ---

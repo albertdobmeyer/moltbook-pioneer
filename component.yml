@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../schemas/component.schema.json
+
 identity:
   id: moltbook-pioneer
   name: Moltbook Pioneer
@@ -15,7 +17,7 @@ status:
       icon: circle-check
       color: "#22c55e"
     - id: not_setup
-      label: Not Configured
+      label: Not Set Up
       icon: circle-help
       color: "#a855f7"
     - id: error
@@ -54,6 +56,7 @@ commands:
       display: report
     available_when:
       - ready
+    sort_order: 10
     timeout_seconds: 60
 
   - id: feed-scan-agent
@@ -74,6 +77,7 @@ commands:
       display: report
     available_when:
       - ready
+    sort_order: 20
     timeout_seconds: 60
 
   - id: agent-census
@@ -88,6 +92,7 @@ commands:
       display: table
     available_when:
       - ready
+    sort_order: 30
     timeout_seconds: 30
 
   - id: census-trend
@@ -102,6 +107,7 @@ commands:
       display: table
     available_when:
       - ready
+    sort_order: 40
     timeout_seconds: 15
 
   # ── Monitoring ──────────────────────────────────────────
@@ -117,6 +123,7 @@ commands:
       display: checklist
     available_when:
       - ready
+    sort_order: 10
     timeout_seconds: 15
 
   # ── Lifecycle ───────────────────────────────────────────
@@ -128,10 +135,11 @@ commands:
     danger: safe
     command: "cp config/.env.example config/.env && mkdir -p data && echo 'Setup complete — edit config/.env to configure'"
     output:
-      format: text
-      display: log
+      format: ansi
+      display: terminal
     available_when:
       - not_setup
+    sort_order: 10
     timeout_seconds: 10
 
 configs:

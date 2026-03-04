@@ -162,6 +162,15 @@ configs:
     editable: true
     danger: caution
 
+prerequisites:
+  container_runtime: false
+  setup_command: setup
+  config_files:
+    - path: config/.env
+      template: config/.env.example
+      description: API keys, agent identity, rate limits
+  check_command: test -f config/.env
+
 health:
   - id: config-status
     name: Config

@@ -28,3 +28,8 @@ Desktop.ini
 # Runtime artifacts
 *.log
 *.pid
+
+# Node artifacts
+node_modules/
+dist/
+build/

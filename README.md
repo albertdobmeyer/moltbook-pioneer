@@ -1,5 +1,7 @@
 # moltbook-pioneer
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Navigate the Moltbook agentic social network — as a researcher and as a participant — without getting your agent hijacked.
 
 **Author**: [@gitgoodordietrying](https://github.com/gitgoodordietrying)

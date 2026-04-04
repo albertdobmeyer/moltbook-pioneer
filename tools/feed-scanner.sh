@@ -93,7 +93,7 @@ fi
 
 # ── Load Patterns ─────────────────────────────────────────
 # Parse injection-patterns.yml into arrays
-# Format: SEVERITY|CATEGORY|REGEX|DESCRIPTION
+# Format: SEVERITY<TAB>CATEGORY<TAB>REGEX<TAB>DESCRIPTION
 PATTERNS=()
 
 load_patterns() {
@@ -113,7 +113,7 @@ load_patterns() {
       "- id:"*)
         # Save previous pattern if complete
         if [[ -n "$severity" && -n "$regex" ]]; then
-          PATTERNS+=("${severity}|${category}|${regex}|${description}")
+          PATTERNS+=("${severity}	${category}	${regex}	${description}")
         fi
         id="${trimmed#*: }"
         severity="" category="" regex="" description=""
@@ -129,6 +129,8 @@ load_patterns() {
         regex="${trimmed#*: }"
         regex="${regex#\"}"
         regex="${regex%\"}"
+        # Strip (?i) flag — grep -Ei already handles case insensitivity
+        regex="${regex#\(\?i\)}"
         ;;
       "description:"*)
         description="${trimmed#*: }"
@@ -140,7 +142,7 @@ load_patterns() {
 
   # Don't forget the last pattern
   if [[ -n "$severity" && -n "$regex" ]]; then
-    PATTERNS+=("${severity}|${category}|${regex}|${description}")
+    PATTERNS+=("${severity}	${category}	${regex}	${description}")
   fi
 
   if (( ${#PATTERNS[@]} == 0 )); then
@@ -190,6 +192,8 @@ load_allowlist() {
           local pattern="${trimmed#*: }"
           pattern="${pattern#\"}"
           pattern="${pattern%\"}"
+          # Strip (?i) flag — grep -Ei already handles case insensitivity
+          pattern="${pattern#\(\?i\)}"
           SAFE_PATTERNS+=("$pattern")
         fi
         ;;
@@ -330,7 +334,7 @@ if $i < len(posts):
     # Scan against each pattern
     local post_findings=0
     for pattern_def in "${PATTERNS[@]}"; do
-      IFS='|' read -r severity category regex description <<< "$pattern_def"
+      IFS=$'\t' read -r severity category regex description <<< "$pattern_def"
 
       if echo "$content" | grep -qEi "$regex" 2>/dev/null; then
         if (( post_findings == 0 )); then

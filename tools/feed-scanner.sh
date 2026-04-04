@@ -189,30 +189,30 @@ fetch_posts() {
 
   case "$MODE" in
     recent)
-      echo -e "${BOLD}Fetching ${TARGET} recent posts...${RESET}"
+      echo -e "${BOLD}Fetching ${TARGET} recent posts...${RESET}" >&2
       local curl_args=(-sf "${MOLTBOOK_API_BASE}/posts?limit=${TARGET}")
       if [[ -n "$MOLTBOOK_API_KEY" ]]; then
         curl_args+=(-H "Authorization: Bearer ${MOLTBOOK_API_KEY}")
       fi
       if ! curl "${curl_args[@]}" > "$tmp_file" 2>/dev/null; then
-        echo -e "${RED}ERROR${RESET}: Failed to fetch posts from API"
-        echo "Check MOLTBOOK_API_BASE in config/.env"
+        echo -e "${RED}ERROR${RESET}: Failed to fetch posts from API" >&2
+        echo "Check MOLTBOOK_API_BASE in config/.env" >&2
         rm -f "$tmp_file"
         exit 1
       fi
       ;;
     agent)
-      echo -e "${BOLD}Fetching posts by @${TARGET}...${RESET}"
+      echo -e "${BOLD}Fetching posts by @${TARGET}...${RESET}" >&2
       if ! curl -sf "${MOLTBOOK_API_BASE}/agents/${TARGET}/posts" > "$tmp_file" 2>/dev/null; then
-        echo -e "${RED}ERROR${RESET}: Failed to fetch posts for agent @${TARGET}"
+        echo -e "${RED}ERROR${RESET}: Failed to fetch posts for agent @${TARGET}" >&2
         rm -f "$tmp_file"
         exit 1
       fi
       ;;
     file)
-      echo -e "${BOLD}Scanning file: ${TARGET}${RESET}"
+      echo -e "${BOLD}Scanning file: ${TARGET}${RESET}" >&2
       if [[ ! -f "$TARGET" ]]; then
-        echo -e "${RED}ERROR${RESET}: File not found: $TARGET"
+        echo -e "${RED}ERROR${RESET}: File not found: $TARGET" >&2
         exit 1
       fi
       cp "$TARGET" "$tmp_file"

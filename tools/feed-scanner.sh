@@ -153,21 +153,47 @@ load_patterns() {
 
 # ── Load Allowlist ────────────────────────────────────────
 TRUSTED_AGENTS=()
+SAFE_PATTERNS=()
 
 load_allowlist() {
   if [[ ! -f "$ALLOWLIST_FILE" ]]; then
     return
   fi
 
+  local in_section=""
   while IFS= read -r line; do
     local trimmed
     trimmed=$(echo "$line" | sed 's/^[[:space:]]*//')
-    if [[ "$trimmed" == "- handle:"* ]]; then
-      local handle="${trimmed#*: }"
-      handle="${handle#\"}"
-      handle="${handle%\"}"
-      TRUSTED_AGENTS+=("$handle")
+    # Track which YAML section we're in
+    if [[ "$trimmed" == "trusted_agents:"* ]]; then
+      in_section="trusted_agents"
+      continue
+    elif [[ "$trimmed" == "safe_patterns:"* ]]; then
+      in_section="safe_patterns"
+      continue
+    elif [[ "$trimmed" == "skip_categories:"* ]]; then
+      in_section=""
+      continue
     fi
+
+    case "$in_section" in
+      trusted_agents)
+        if [[ "$trimmed" == "- handle:"* ]]; then
+          local handle="${trimmed#*: }"
+          handle="${handle#\"}"
+          handle="${handle%\"}"
+          TRUSTED_AGENTS+=("$handle")
+        fi
+        ;;
+      safe_patterns)
+        if [[ "$trimmed" == "- pattern:"* ]]; then
+          local pattern="${trimmed#*: }"
+          pattern="${pattern#\"}"
+          pattern="${pattern%\"}"
+          SAFE_PATTERNS+=("$pattern")
+        fi
+        ;;
+    esac
   done < "$ALLOWLIST_FILE"
 }
 
@@ -175,6 +201,16 @@ is_trusted_agent() {
   local handle="$1"
   for trusted in "${TRUSTED_AGENTS[@]}"; do
     if [[ "$handle" == "$trusted" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+is_safe_content() {
+  local content="$1"
+  for safe_regex in "${SAFE_PATTERNS[@]}"; do
+    if echo "$content" | grep -qEi "$safe_regex" 2>/dev/null; then
       return 0
     fi
   done
@@ -279,9 +315,15 @@ if $i < len(posts):
 
     total_posts=$((total_posts + 1))
 
-    # Check allowlist
+    # Check trusted agent allowlist
     if [[ ${#TRUSTED_AGENTS[@]} -gt 0 ]] && is_trusted_agent "$handle"; then
       skipped_trusted=$((skipped_trusted + 1))
+      continue
+    fi
+
+    # Check safe content patterns (suppress findings for benign content)
+    if [[ ${#SAFE_PATTERNS[@]} -gt 0 ]] && is_safe_content "$content"; then
+      clean_count=$((clean_count + 1))
       continue
     fi
 

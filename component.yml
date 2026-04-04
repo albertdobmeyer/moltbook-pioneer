@@ -20,10 +20,6 @@ status:
       label: Not Set Up
       icon: circle-help
       color: "#a855f7"
-    - id: error
-      label: Error
-      icon: alert-triangle
-      color: "#ef4444"
   probes:
     - command: "test -f config/.env && echo ready"
       interval_seconds: 30
@@ -123,6 +119,7 @@ commands:
       display: checklist
     available_when:
       - ready
+      - not_setup
     sort_order: 10
     timeout_seconds: 15
 

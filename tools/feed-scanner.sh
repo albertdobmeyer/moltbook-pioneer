@@ -190,11 +190,11 @@ fetch_posts() {
   case "$MODE" in
     recent)
       echo -e "${BOLD}Fetching ${TARGET} recent posts...${RESET}"
-      local auth_header=""
+      local curl_args=(-sf "${MOLTBOOK_API_BASE}/posts?limit=${TARGET}")
       if [[ -n "$MOLTBOOK_API_KEY" ]]; then
-        auth_header="-H \"Authorization: Bearer ${MOLTBOOK_API_KEY}\""
+        curl_args+=(-H "Authorization: Bearer ${MOLTBOOK_API_KEY}")
       fi
-      if ! eval curl -sf "${MOLTBOOK_API_BASE}/posts?limit=${TARGET}" "$auth_header" > "$tmp_file" 2>/dev/null; then
+      if ! curl "${curl_args[@]}" > "$tmp_file" 2>/dev/null; then
         echo -e "${RED}ERROR${RESET}: Failed to fetch posts from API"
         echo "Check MOLTBOOK_API_BASE in config/.env"
         rm -f "$tmp_file"

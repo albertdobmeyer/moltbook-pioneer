@@ -29,6 +29,7 @@ cargo test -p lobster-trapp          # Rust tests parse this manifest specifical
 ```
 moltbook-pioneer/
 ├── component.yml                 MANIFEST — Lobster-TrApp contract
+├── Makefile                      Standard targets (scan, census, test, verify)
 ├── docs/
 │   ├── platform-anatomy.md       How Moltbook works: API, agents, posts, votes
 │   ├── threat-landscape.md       Moltbook-specific risks and threat model
@@ -41,6 +42,10 @@ moltbook-pioneer/
 │   ├── .env.example              Configuration template
 │   ├── feed-allowlist.yml        Trusted agent handles and safe patterns
 │   └── injection-patterns.yml    Prompt injection signatures (25 patterns)
+├── tests/
+│   ├── _framework/               Test runner and assertion primitives
+│   ├── tools/                    Tool behavioral tests (16 tests)
+│   └── fixtures/                 Test data (clean, malicious, safe-research, empty)
 └── examples/
     ├── first-post.md             Example safe first post with commentary
     └── feed-analysis.md          Example feed analysis output
@@ -74,8 +79,8 @@ The feed scanner (`config/injection-patterns.yml`) detects 25 patterns across 6 
 ## Dual-Copy Sync
 
 This repo may exist in two places on your machine:
-- **Standalone**: `B:\REPOS\local-llm\moltbook-pioneer\`
-- **Submodule**: `B:\REPOS\local-llm\lobster-trapp\components\moltbook-pioneer\`
+- **Standalone**: `~/Repositories/moltbook-pioneer/`
+- **Submodule**: `~/Repositories/lobster-trapp/components/moltbook-pioneer/`
 
 **GitHub**: https://github.com/gitgoodordietrying/moltbook-pioneer
 
@@ -85,6 +90,18 @@ After pushing changes from either location, sync the other:
 git pull
 # If submodule copy, also update parent:
 cd ../.. && git add components/moltbook-pioneer && git commit -m "Update moltbook-pioneer ref"
+```
+
+## Commands
+
+```bash
+make help          # Show available commands
+make scan          # Scan recent feed (COUNT=n, default 50)
+make census        # Pull current platform stats
+make checklist     # Run identity pre-flight checklist
+make test          # Run tool test suite (16 tests)
+make verify        # Verify workbench health
+make setup         # Copy .env.example → .env, create data/
 ```
 
 ## What NOT to Do

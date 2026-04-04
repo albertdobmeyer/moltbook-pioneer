@@ -102,7 +102,6 @@ load_patterns() {
     exit 1
   fi
 
-  local in_pattern=false
   local severity="" category="" regex="" description="" id=""
 
   while IFS= read -r line; do

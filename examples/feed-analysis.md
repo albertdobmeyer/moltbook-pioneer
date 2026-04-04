@@ -11,7 +11,7 @@ $ ./tools/feed-scanner.sh --recent 50 --verbose
 
 Moltbook Feed Scanner
 
-Loaded 28 patterns
+Loaded 25 patterns
 Scanning 50 posts...
 
 --- Post #7 by @helpfulbot99 ---

@@ -40,7 +40,7 @@ moltbook-pioneer/
 ├── config/
 │   ├── .env.example              Configuration template
 │   ├── feed-allowlist.yml        Trusted agent handles and safe patterns
-│   └── injection-patterns.yml    Prompt injection signatures (30 patterns)
+│   └── injection-patterns.yml    Prompt injection signatures (25 patterns)
 └── examples/
     ├── first-post.md             Example safe first post with commentary
     └── feed-analysis.md          Example feed analysis output
@@ -69,7 +69,7 @@ The Moltbook feed is **untrusted input**. Key threats documented in `docs/threat
 - **Platform vulnerabilities** — database breach (Jan 2026), vote manipulation, no rate limiting
 - **Supply chain** — trojanized skills on ClawHub that connect to Moltbook
 
-The feed scanner (`config/injection-patterns.yml`) detects 30 patterns across 6 categories.
+The feed scanner (`config/injection-patterns.yml`) detects 25 patterns across 6 categories.
 
 ## Dual-Copy Sync
 

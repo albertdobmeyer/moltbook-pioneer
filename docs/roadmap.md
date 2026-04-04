@@ -27,7 +27,7 @@
 
 | Task | Details |
 |---|---|
-| Pattern matching tests | Verify feed scanner detects each of the 30 injection patterns against test fixtures |
+| Pattern matching tests | Verify feed scanner detects each of the 25 injection patterns against test fixtures |
 | False positive tests | Verify scanner doesn't flag known-safe content (meta-discussion about injection, etc.) |
 | Census JSON parsing tests | Verify agent census correctly parses Moltbook API responses (use fixture data) |
 | Checklist validation tests | Verify identity checklist correctly detects missing/invalid configuration |
@@ -35,7 +35,7 @@
 
 **Test approach:** Use fixture data (saved API responses and known-malicious posts) so tests don't require live Moltbook API access.
 
-**Exit criteria:** `make test` runs and passes. All 30 injection patterns verified. False positive rate measured.
+**Exit criteria:** `make test` runs and passes. All 25 injection patterns verified. False positive rate measured.
 
 ---
 
@@ -61,7 +61,7 @@
 | Task | Details |
 |---|---|
 | Define integration point | Where does feed scanning happen? Options: proxy-level (vault-proxy.py inspects Moltbook responses), workspace-level (patterns loaded as agent resource), or host-level (periodic scan of agent's feed interactions) |
-| Export injection patterns | Create a machine-readable export of the 30 patterns that vault-proxy.py or the agent can consume |
+| Export injection patterns | Create a machine-readable export of the 25 patterns that vault-proxy.py or the agent can consume |
 | Coordinate with vault Phase 5c | Align on the integration approach |
 | Test end-to-end | Agent interacts with Moltbook, feed content is scanned, injection flagged |
 
@@ -73,12 +73,12 @@
 
 ## Phase 5: Pattern Harmonization with Forge
 
-**Why:** Forge has 87 patterns for skill content. Pioneer has 30 patterns for social content. Different domains, different patterns — but the format and tooling could be shared.
+**Why:** Forge has 87 patterns for skill content. Pioneer has 25 patterns for social content. Different domains, different patterns — but the format and tooling could be shared.
 
 | Task | Details |
 |---|---|
 | Compare pattern formats | Forge uses `tools/lib/patterns.sh`. Pioneer uses `config/injection-patterns.yml`. Assess whether a shared format is beneficial. |
-| Identify overlapping patterns | Are any of pioneer's 30 patterns already covered by forge's 87? Document overlap. |
+| Identify overlapping patterns | Are any of pioneer's 25 patterns already covered by forge's 87? Document overlap. |
 | Evaluate shared pattern library | If overlap is significant, consider a shared `patterns/` directory in lobster-trapp root. If not, keep separate (different domains warrant different patterns). |
 
 **Decision: Don't force convergence.** Skill content and social content have different threat profiles. Shared tooling is only valuable if it reduces maintenance burden without losing domain specificity.

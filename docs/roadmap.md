@@ -1,73 +1,83 @@
 # Moltbook-Pioneer Roadmap
 
-**Updated:** 2026-03-27
-**Current state:** Three functional tools (feed scanner, agent census, identity checklist), comprehensive threat model, zero automated tests. The least mature of the three modules but feature-complete for its stated purpose.
+**Updated:** 2026-04-04
+**Current state:** Three tools operational (feed scanner, agent census, identity checklist), 25 injection patterns, 16 behavioral tests passing, Makefile, safe_patterns wired. Phases 1-2 complete.
 **Cross-reference:** See `docs/trifecta.md` in the lobster-trapp root for how this module fits with openclaw-vault and clawhub-forge.
 
 ---
 
-## Phase 1: Fix Known Bugs
+## Phase 1: Fix Known Bugs — COMPLETE (2026-04-04)
 
-**Why:** Operational issues that affect first-time users.
+11-commit sequence fixing all known bugs:
 
-| Task | Details |
-|---|---|
-| Add `chmod +x` to setup or README | `tools/*.sh` lack executable bits on fresh clone. Either fix in `make setup` or document in quick-start. |
-| Wire `safe_patterns` in feed scanner | `config/feed-allowlist.yml` declares `safe_patterns` but the scanner ignores them. Either implement or remove the key to eliminate silent config confusion. |
-| Fix `eval` in `feed-scanner.sh` | Line ~197 uses `eval` for auth header construction. Replace with direct variable expansion to close minor shell injection surface. |
-| Complete Gear → Shell terminology | Update any references to "Gear" to use "Shell" per `GLOSSARY.md`. |
+| Fix | Commit |
+|-----|--------|
+| CRLF → LF + .gitattributes | `b3d6007` |
+| Executable bits on tools/*.sh | `d5e50bd` |
+| eval → array-based curl | `86f4733` |
+| fetch_posts stderr | `4d17d0f` |
+| Dead in_pattern variable | `e00b31a` |
+| Wire safe_patterns | `512fd2e` |
+| Pattern count 30 → 25 | `e75a7c0` |
+| component.yml states | `c77d192` |
+| Makefile | `52b2414` |
 
-**Exit criteria:** Tools work correctly on fresh clone. No silent config failures. No eval usage.
+Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke grep ERE matching, and `|` delimiter collided with regex alternation in the pattern storage format.
 
 ---
 
-## Phase 2: Automated Tests
+## Phase 2: Automated Tests — COMPLETE (2026-04-04)
 
-**Why:** Pioneer has zero automated tests. Forge has 168 assertions, vault has 12 test scripts + 15-point verify. Pioneer is the gap.
+| Deliverable | Status |
+|-------------|--------|
+| Test framework (tool-runner.sh + tool-assertions.sh) | Ported from forge |
+| Feed scanner tests (10) | Passing |
+| Agent census tests (3) | Passing |
+| Identity checklist tests (3) | Passing |
+| Fixtures (clean, malicious, safe-research, empty) | Created |
+| `make test` target | Working |
 
-| Task | Details |
-|---|---|
-| Pattern matching tests | Verify feed scanner detects each of the 25 injection patterns against test fixtures |
-| False positive tests | Verify scanner doesn't flag known-safe content (meta-discussion about injection, etc.) |
-| Census JSON parsing tests | Verify agent census correctly parses Moltbook API responses (use fixture data) |
-| Checklist validation tests | Verify identity checklist correctly detects missing/invalid configuration |
-| Add `make test` target | Run all tests with pass/fail reporting |
-
-**Test approach:** Use fixture data (saved API responses and known-malicious posts) so tests don't require live Moltbook API access.
-
-**Exit criteria:** `make test` runs and passes. All 25 injection patterns verified. False positive rate measured.
+**Total:** 16 tests, 0 failures.
 
 ---
 
 ## Phase 3: Offline / Dry-Run Mode
 
-**Why:** Moltbook API liveness is unknown. Tools should work without network access for development and testing.
+**Why:** Moltbook API liveness is unknown. The census tool should work without network access for development, CI, and demo purposes. The feed scanner already supports `--file` mode (used by all fixture tests).
 
 | Task | Details |
 |---|---|
-| Add `--dry-run` to feed scanner | Use fixture data instead of live API calls |
-| Add `--dry-run` to agent census | Return cached snapshot data |
-| Document API status | Confirm whether `moltbook.com/api/v1` is currently accessible. Document findings. |
-| Add `data/fixtures/` | Sample API responses for testing and dry-run mode |
+| Add `--file` to agent-census.sh | Read a saved JSON snapshot instead of hitting the API. Model on feed-scanner's existing `--file` mode. |
+| Add census fixture | `tests/fixtures/census-snapshot.json` — sample API response for testing |
+| Add census `--file` tests | 2-3 tests: `--file` exits 0, output contains expected sections |
+| Add `make check-api` target | curl Moltbook API, report status (up/down/timeout) |
+| Document API status | Confirm whether `moltbook.com/api/v1` is currently accessible. Add findings to this roadmap. |
 
-**Exit criteria:** All tools work offline with `--dry-run`. API liveness documented.
+**What's NOT needed:** The feed scanner already has `--file` mode — that IS its offline mode. No `--dry-run` wrapper needed.
+
+**Exit criteria:** All three tools work offline via `--file` or fixtures. API liveness documented. `make test` still passes.
 
 ---
 
-## Phase 4: Vault Integration
+## Phase 4: Vault Integration — Pattern Export for Proxy-Level Feed Scanning
 
-**Why:** When Moltbook domains are added to the vault's allowlist (Soft Shell or later), pioneer's feed scanning should protect the agent.
+**Why:** When Moltbook domains enter the vault's proxy allowlist, social content must be scanned for injection attacks before the agent sees it. The scanning happens at the proxy level (host-side, trusted) — the agent never sees flagged critical content.
+
+**Full spec:** `docs/specs/2026-04-04-vault-integration-design.md`
 
 | Task | Details |
 |---|---|
-| Define integration point | Where does feed scanning happen? Options: proxy-level (vault-proxy.py inspects Moltbook responses), workspace-level (patterns loaded as agent resource), or host-level (periodic scan of agent's feed interactions) |
-| Export injection patterns | Create a machine-readable export of the 25 patterns that vault-proxy.py or the agent can consume |
-| Coordinate with vault Phase 5c | Align on the integration approach |
-| Test end-to-end | Agent interacts with Moltbook, feed content is scanned, injection flagged |
+| Create `make export-patterns` target | Generates `data/patterns-export.yml` — stripped YAML with id, regex, severity only |
+| Validate export format with vault-proxy.py | Ensure Python `re.compile()` handles all 25 patterns correctly |
+| Add proxy integration code to vault-proxy.py | Moltbook-domain response inspection, pattern matching, critical blocking, logging |
+| Add integration tests | Test with fixture data: malicious response blocked, clean response passed through |
+| Document activation | When/how Moltbook domains enter the allowlist, what the user sees |
 
-**This is not blocking anything now** — Moltbook domains are not in the vault's allowlist until Soft Shell or later.
+**Blocking policy:** Critical findings block the response (replaced with sanitized version). High/Medium findings are logged but the agent still sees the content.
 
-**Exit criteria:** Feed scanning integration designed and documented. Pattern export format defined.
+**Not blocking anything now** — Moltbook domains are not in the vault's allowlist. But the pattern export mechanism should be built so the format is stable when integration happens.
+
+**Exit criteria:** Pattern export works. Spec approved. Integration code exists but dormant until Moltbook domains are allowlisted.
 
 ---
 
@@ -77,9 +87,9 @@
 
 | Task | Details |
 |---|---|
-| Compare pattern formats | Forge uses `tools/lib/patterns.sh`. Pioneer uses `config/injection-patterns.yml`. Assess whether a shared format is beneficial. |
+| Compare pattern formats | Forge uses `tools/lib/patterns.sh` (bash functions). Pioneer uses `config/injection-patterns.yml` (YAML + regex). Assess whether a shared format is beneficial. |
 | Identify overlapping patterns | Are any of pioneer's 25 patterns already covered by forge's 87? Document overlap. |
-| Evaluate shared pattern library | If overlap is significant, consider a shared `patterns/` directory in lobster-trapp root. If not, keep separate (different domains warrant different patterns). |
+| Evaluate shared pattern library | If overlap is significant, consider a shared `patterns/` directory in lobster-trapp root. If not, keep separate. |
 
 **Decision: Don't force convergence.** Skill content and social content have different threat profiles. Shared tooling is only valuable if it reduces maintenance burden without losing domain specificity.
 
@@ -90,15 +100,15 @@
 ## Dependency Graph
 
 ```
-Phase 1 (Bug fixes)
+Phase 1 (Bug fixes) ✅
     ↓
-Phase 2 (Automated tests)
+Phase 2 (Automated tests) ✅
     ↓
 Phase 3 (Offline mode)
     ↓
-Phase 4 (Vault integration) ← depends on vault Phase 4/5
+Phase 4 (Vault integration) ← depends on vault allowlist decision
     ↓
-Phase 5 (Pattern harmonization) ← depends on forge Phase 4
+Phase 5 (Pattern harmonization) ← depends on forge pattern access
 ```
 
 ---

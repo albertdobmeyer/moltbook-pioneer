@@ -3,6 +3,7 @@
 # Usage:
 #   agent-census.sh                 Pull current stats
 #   agent-census.sh --trend         Show trend from saved snapshots
+#   agent-census.sh --file <path>   Load census data from a local JSON file
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -37,6 +38,7 @@ mkdir -p "$DATA_DIR"
 
 # ── Parse Args ────────────────────────────────────────────
 MODE="census"
+FILE_PATH=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -44,14 +46,20 @@ while [[ $# -gt 0 ]]; do
       MODE="trend"
       shift
       ;;
+    --file)
+      MODE="file"
+      FILE_PATH="${2:?--file requires a path}"
+      shift 2
+      ;;
     -h|--help)
-      echo "Usage: agent-census.sh [--trend]"
+      echo "Usage: agent-census.sh [--trend] [--file <path>]"
       echo ""
       echo "Pull platform statistics from Moltbook API."
       echo ""
       echo "Options:"
-      echo "  --trend     Show trend from saved census snapshots"
-      echo "  -h, --help  Show this help"
+      echo "  --trend          Show trend from saved census snapshots"
+      echo "  --file <path>    Load census data from a local JSON file"
+      echo "  -h, --help       Show this help"
       exit 0
       ;;
     *)
@@ -185,6 +193,102 @@ with open('$snapshot_file', 'w') as f:
   echo -e "${DIM}Run with --trend to compare snapshots over time${RESET}"
 }
 
+# ── File Mode ─────────────────────────────────────────────
+run_census_from_file() {
+  echo -e "${BOLD}Moltbook Agent Census (offline)${RESET}" >&2
+  echo -e "${DIM}Source: ${FILE_PATH}${RESET}" >&2
+  echo "" >&2
+
+  if [[ ! -f "$FILE_PATH" ]]; then
+    echo -e "${RED}ERROR${RESET}: File not found: $FILE_PATH" >&2
+    exit 1
+  fi
+
+  local timestamp
+  timestamp=$(date +%Y%m%d-%H%M%S)
+  local snapshot_file="$DATA_DIR/census-${timestamp}.json"
+
+  # Parse stats and posts from the file
+  local agents_count posts_count comments_count
+  read -r agents_count posts_count comments_count <<< "$(python3 -c "
+import sys, json
+with open('$FILE_PATH') as f:
+    data = json.load(f)
+stats = data.get('stats', {})
+print(stats.get('agents', '-'), stats.get('posts', '-'), stats.get('comments', '-'))
+" 2>/dev/null || echo "- - -")"
+
+  local recent_posts_count=0
+  local unique_agents=0
+  read -r recent_posts_count unique_agents <<< "$(python3 -c "
+import sys, json
+with open('$FILE_PATH') as f:
+    data = json.load(f)
+posts = data.get('posts', [])
+handles = set()
+for p in posts:
+    h = p.get('agent_handle', p.get('handle', ''))
+    if h:
+        handles.add(h)
+print(len(posts), len(handles))
+" 2>/dev/null || echo "0 0")"
+
+  local top_posts=""
+  top_posts=$(python3 -c "
+import json
+with open('$FILE_PATH') as f:
+    data = json.load(f)
+posts = sorted(data.get('posts', []), key=lambda p: p.get('upvotes', p.get('votes', 0)), reverse=True)
+for p in posts[:10]:
+    handle = p.get('agent_handle', p.get('handle', 'unknown'))
+    votes = p.get('upvotes', p.get('votes', 0))
+    content = p.get('content', '')[:60].replace('\n', ' ')
+    print(f'  {handle:<20} {votes:>8} votes  {content}')
+" 2>/dev/null || echo "")
+
+  # Display results (same layout as live mode)
+  echo ""
+  echo -e "${BOLD}Platform Overview${RESET}"
+  echo -e "  Registered agents:    ${CYAN}${agents_count}${RESET}"
+  echo -e "  Total posts:          ${CYAN}${posts_count}${RESET}"
+  echo -e "  Total comments:       ${CYAN}${comments_count}${RESET}"
+  echo ""
+  echo -e "${BOLD}Recent Activity${RESET}"
+  echo -e "  Posts loaded:         ${recent_posts_count}"
+  echo -e "  Unique agents:        ${unique_agents}"
+  echo ""
+
+  if [[ -n "$top_posts" ]]; then
+    echo -e "${BOLD}Top Posts by Votes${RESET}"
+    echo -e "${DIM}  (Vote counts are unreliable — race condition in voting API)${RESET}"
+    echo "$top_posts"
+    echo ""
+  fi
+
+  # Save snapshot
+  python3 -c "
+import json
+from datetime import datetime
+snapshot = {
+    'timestamp': '$timestamp',
+    'date': datetime.now().isoformat(),
+    'platform': {
+        'agents': '$agents_count',
+        'posts': '$posts_count',
+        'comments': '$comments_count'
+    },
+    'recent_activity': {
+        'posts_sampled': $recent_posts_count,
+        'unique_agents': $unique_agents
+    }
+}
+with open('$snapshot_file', 'w') as f:
+    json.dump(snapshot, f, indent=2)
+" 2>/dev/null
+
+  echo -e "Snapshot saved: ${snapshot_file}"
+}
+
 # ── Trend Mode ────────────────────────────────────────────
 show_trend() {
   echo -e "${BOLD}Moltbook Census Trend${RESET}"
@@ -228,5 +332,6 @@ print(f'  {date:<20} {agents:>15} {posts:>12} {comments:>12} {str(active):>10}')
 # ── Main ──────────────────────────────────────────────────
 case "$MODE" in
   census) run_census ;;
+  file)   run_census_from_file ;;
   trend)  show_trend ;;
 esac

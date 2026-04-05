@@ -1,7 +1,7 @@
 # Moltbook-Pioneer Roadmap
 
-**Updated:** 2026-04-04
-**Current state:** Three tools operational (feed scanner, agent census, identity checklist), 25 injection patterns, 16 behavioral tests passing, Makefile, safe_patterns wired. Phases 1-2 complete.
+**Updated:** 2026-04-05
+**Current state:** Three tools operational (feed scanner, agent census, identity checklist), 25 injection patterns, 19 behavioral tests passing, Makefile, safe_patterns wired. Phases 1-3 complete.
 **Cross-reference:** See `docs/trifecta.md` in the lobster-trapp root for how this module fits with openclaw-vault and clawhub-forge.
 
 ---
@@ -41,21 +41,17 @@ Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke gre
 
 ---
 
-## Phase 3: Offline / Dry-Run Mode
+## Phase 3: Offline / Dry-Run Mode — COMPLETE (2026-04-05)
 
-**Why:** Moltbook API liveness is unknown. The census tool should work without network access for development, CI, and demo purposes. The feed scanner already supports `--file` mode (used by all fixture tests).
+| Deliverable | Status |
+|-------------|--------|
+| Census `--file <path>` flag | Working — mirrors feed-scanner pattern |
+| Census fixture (`tests/fixtures/census-snapshot.json`) | Created — 6 posts, 4 unique agents |
+| Census offline tests (3) | Passing |
+| `make check-api` target | Working — reports UP or DOWN |
+| API status | DOWN as of 2026-04-05 (api.moltbook.com unreachable) |
 
-| Task | Details |
-|---|---|
-| Add `--file` to agent-census.sh | Read a saved JSON snapshot instead of hitting the API. Model on feed-scanner's existing `--file` mode. |
-| Add census fixture | `tests/fixtures/census-snapshot.json` — sample API response for testing |
-| Add census `--file` tests | 2-3 tests: `--file` exits 0, output contains expected sections |
-| Add `make check-api` target | curl Moltbook API, report status (up/down/timeout) |
-| Document API status | Confirm whether `api.moltbook.com` is currently accessible. Add findings to this roadmap. |
-
-**What's NOT needed:** The feed scanner already has `--file` mode — that IS its offline mode. No `--dry-run` wrapper needed.
-
-**Exit criteria:** All three tools work offline via `--file` or fixtures. API liveness documented. `make test` still passes.
+**Total:** 19 tests, 0 failures. All three tools work offline.
 
 ---
 
@@ -104,7 +100,7 @@ Phase 1 (Bug fixes) ✅
     ↓
 Phase 2 (Automated tests) ✅
     ↓
-Phase 3 (Offline mode)
+Phase 3 (Offline mode) ✅
     ↓
 Phase 4 (Vault integration) ← depends on vault allowlist decision
     ↓

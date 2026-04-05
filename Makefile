@@ -1,4 +1,4 @@
-.PHONY: help scan scan-agent census census-trend checklist setup test verify
+.PHONY: help scan scan-agent census census-trend checklist check-api setup test verify
 
 TOOLS_DIR := tools
 TESTS_DIR := tests
@@ -23,6 +23,12 @@ census-trend: ## Show trend data from saved snapshots
 
 checklist: ## Run identity pre-flight checklist
 	@bash $(TOOLS_DIR)/identity-checklist.sh
+
+check-api: ## Check Moltbook API liveness
+	@echo "Checking Moltbook API..."
+	@curl -sf --max-time 10 https://api.moltbook.com/posts?limit=1 >/dev/null 2>&1 \
+		&& echo "  API: UP (api.moltbook.com responds)" \
+		|| echo "  API: DOWN or unreachable (api.moltbook.com)"
 
 # ── Lifecycle ───────────────────────────────────────────
 setup: ## Copy .env.example → .env, create data/

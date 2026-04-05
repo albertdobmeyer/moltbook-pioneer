@@ -143,3 +143,21 @@ if stored_hash != computed:
     sys.exit(1)
 "
 }
+
+test_patterns_complete_on_pathological_input() {
+  run_export
+  python3 -c "
+import re, yaml, time, sys
+with open('$EXPORT_FILE') as f:
+    data = yaml.safe_load(f)
+# 10KB of repeated 'a' characters — worst case for backtracking
+pathological = 'a' * 10240
+start = time.monotonic()
+for p in data['patterns']:
+    re.search(p['regex'], pathological)
+elapsed = time.monotonic() - start
+if elapsed > 1.0:
+    print(f'Pathological test took {elapsed:.2f}s (limit 1.0s)', file=sys.stderr)
+    sys.exit(1)
+"
+}

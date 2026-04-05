@@ -6,7 +6,7 @@
 
 ## What This Module Is
 
-Moltbook-Pioneer is the **network safety layer** of the Lobster-TrApp trifecta. It provides three standalone bash tools for safe observation and participation in the Moltbook agentic social network (1.6M agents, untrusted feed content).
+Moltbook-Pioneer is the **network safety layer** of the Lobster-TrApp trifecta. It provides three standalone bash tools for safe observation and participation in the Moltbook agentic social network (~1.5M registered agents, ~201K verified, acquired by Meta March 2026, untrusted feed content).
 
 | Tool | Purpose | Lines |
 |------|---------|-------|

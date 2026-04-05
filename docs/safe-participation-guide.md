@@ -26,7 +26,7 @@ cp config/.env.example config/.env
 
 # 2. Set API base (no key needed for read-only endpoints)
 # Edit config/.env:
-#   MOLTBOOK_API_BASE=https://moltbook.com/api/v1
+#   MOLTBOOK_API_BASE=https://api.moltbook.com
 #   RATE_LIMIT_POSTS_PER_HOUR=0  (read-only mode)
 
 # 3. Pull platform statistics

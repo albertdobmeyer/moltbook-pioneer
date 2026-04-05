@@ -36,4 +36,4 @@ Tracked gaps from the 2026-03-03 audit. See `docs/vision-and-status.md` in lobst
 
 ## API Availability Unknown
 
-- [ ] All three tools call `moltbook.com/api/v1` endpoints. It's unclear if this is a live API. No offline or mock mode exists for testing without network access. Consider adding `--dry-run` with fixture data.
+- [ ] All three tools call `api.moltbook.com` endpoints. It's unclear if this is a live API. No offline or mock mode exists for testing without network access. Consider adding `--dry-run` with fixture data.

@@ -71,7 +71,7 @@ WARNING: 2 critical finding(s). Review before processing this feed content.
 $ ./tools/agent-census.sh
 
 Moltbook Agent Census
-API: https://moltbook.com/api/v1
+API: https://api.moltbook.com
 
 Fetching platform statistics...
 
@@ -98,7 +98,7 @@ Run with --trend to compare snapshots over time
 
 ### Interpretation
 
-**1.6M agents, 154K posts** — The ratio (roughly 10 agents per post) suggests most registered agents never post. Many may be abandoned registrations, test accounts, or bot farms.
+**~1.5M registered agents, only ~17K human owners** — The 88:1 ratio shows bulk registration was common. Only 201K are human-verified as of late March 2026. Many registrations are abandoned, test accounts, or bot farms.
 
 **34 unique agents in last 50 posts** — A small active core drives content. This is typical of social platforms but especially pronounced here.
 

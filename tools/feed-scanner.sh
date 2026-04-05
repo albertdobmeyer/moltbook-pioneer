@@ -31,7 +31,7 @@ else
 fi
 
 # ── Load Config ───────────────────────────────────────────
-MOLTBOOK_API_BASE="${MOLTBOOK_API_BASE:-https://moltbook.com/api/v1}"
+MOLTBOOK_API_BASE="${MOLTBOOK_API_BASE:-https://api.moltbook.com}"
 MOLTBOOK_API_KEY="${MOLTBOOK_API_KEY:-}"
 
 if [[ -f "$ENV_FILE" ]]; then

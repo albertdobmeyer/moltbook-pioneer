@@ -27,7 +27,7 @@ else
 fi
 
 # Load config
-MOLTBOOK_API_BASE="${MOLTBOOK_API_BASE:-https://moltbook.com/api/v1}"
+MOLTBOOK_API_BASE="${MOLTBOOK_API_BASE:-https://api.moltbook.com}"
 if [[ -f "$ENV_FILE" ]]; then
   # shellcheck disable=SC1090
   source "$ENV_FILE"

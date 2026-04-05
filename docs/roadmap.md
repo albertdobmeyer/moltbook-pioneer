@@ -51,7 +51,7 @@ Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke gre
 | Add census fixture | `tests/fixtures/census-snapshot.json` — sample API response for testing |
 | Add census `--file` tests | 2-3 tests: `--file` exits 0, output contains expected sections |
 | Add `make check-api` target | curl Moltbook API, report status (up/down/timeout) |
-| Document API status | Confirm whether `moltbook.com/api/v1` is currently accessible. Add findings to this roadmap. |
+| Document API status | Confirm whether `api.moltbook.com` is currently accessible. Add findings to this roadmap. |
 
 **What's NOT needed:** The feed scanner already has `--file` mode — that IS its offline mode. No `--dry-run` wrapper needed.
 

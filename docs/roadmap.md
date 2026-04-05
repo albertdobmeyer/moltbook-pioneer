@@ -1,7 +1,7 @@
 # Moltbook-Pioneer Roadmap
 
 **Updated:** 2026-04-05
-**Current state:** Three tools operational (feed scanner, agent census, identity checklist), 25 injection patterns, 19 behavioral tests passing, Makefile, safe_patterns wired. Phases 1-3 complete.
+**Current state:** Three tools operational (feed scanner, agent census, identity checklist), 25 injection patterns, 24 behavioral tests passing, pattern export for vault integration, Makefile. Phases 1-4 complete.
 **Cross-reference:** See `docs/trifecta.md` in the lobster-trapp root for how this module fits with openclaw-vault and clawhub-forge.
 
 ---
@@ -55,25 +55,21 @@ Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke gre
 
 ---
 
-## Phase 4: Vault Integration — Pattern Export for Proxy-Level Feed Scanning
-
-**Why:** When Moltbook domains enter the vault's proxy allowlist, social content must be scanned for injection attacks before the agent sees it. The scanning happens at the proxy level (host-side, trusted) — the agent never sees flagged critical content.
+## Phase 4: Vault Integration — Pattern Export — COMPLETE (2026-04-05)
 
 **Full spec:** `docs/specs/2026-04-04-vault-integration-design.md`
 
-| Task | Details |
-|---|---|
-| Create `make export-patterns` target | Generates `data/patterns-export.yml` — stripped YAML with id, regex, severity only |
-| Validate export format with vault-proxy.py | Ensure Python `re.compile()` handles all 25 patterns correctly |
-| Add proxy integration code to vault-proxy.py | Moltbook-domain response inspection, pattern matching, critical blocking, logging |
-| Add integration tests | Test with fixture data: malicious response blocked, clean response passed through |
-| Document activation | When/how Moltbook domains enter the allowlist, what the user sees |
+| Deliverable | Status |
+|-------------|--------|
+| `scripts/export-patterns.py` | Working — raw text parsing avoids YAML/regex backslash conflict |
+| `make export-patterns` target | Working — produces `data/patterns-export.yml` |
+| All 25 regexes compile in Python `re` | Verified — round-trips through PyYAML cleanly |
+| Export tests (5) | Passing — validity, count, compilation, malicious content match |
+| Spec approved | `docs/specs/2026-04-04-vault-integration-design.md` |
 
-**Blocking policy:** Critical findings block the response (replaced with sanitized version). High/Medium findings are logged but the agent still sees the content.
+**Total:** 24 tests, 0 failures. Pattern export format stable.
 
-**Not blocking anything now** — Moltbook domains are not in the vault's allowlist. But the pattern export mechanism should be built so the format is stable when integration happens.
-
-**Exit criteria:** Pattern export works. Spec approved. Integration code exists but dormant until Moltbook domains are allowlisted.
+**Note:** Vault-side integration (proxy response inspection, blocking logic) is Phase C of the master roadmap — not pioneer's responsibility. The export mechanism is dormant until Moltbook domains enter the allowlist.
 
 ---
 
@@ -102,7 +98,7 @@ Phase 2 (Automated tests) ✅
     ↓
 Phase 3 (Offline mode) ✅
     ↓
-Phase 4 (Vault integration) ← depends on vault allowlist decision
+Phase 4 (Vault integration) ✅ — pattern export ready, vault-side deferred to Phase C
     ↓
 Phase 5 (Pattern harmonization) ← depends on forge pattern access
 ```

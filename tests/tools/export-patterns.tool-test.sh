@@ -110,3 +110,36 @@ if not matched_critical:
     sys.exit(1)
 "
 }
+
+test_export_contains_integrity_hash() {
+  run_export
+  # The export file should contain an Integrity comment with a sha256 hash
+  grep -q '^# Integrity: sha256:' "$EXPORT_FILE"
+}
+
+test_integrity_hash_is_valid() {
+  run_export
+  python3 -c "
+import yaml, hashlib, sys, re as re_mod
+with open('$EXPORT_FILE') as f:
+    lines = f.readlines()
+# Extract stored hash from header comment
+stored_hash = None
+for line in lines:
+    m = re_mod.match(r'^# Integrity: sha256:(\w+)', line)
+    if m:
+        stored_hash = m.group(1)
+        break
+if not stored_hash:
+    print('No integrity hash found', file=sys.stderr)
+    sys.exit(1)
+# Recompute hash from pattern regexes
+with open('$EXPORT_FILE') as f:
+    data = yaml.safe_load(f)
+hash_input = '\n'.join(p['regex'] for p in sorted(data['patterns'], key=lambda x: x['id']))
+computed = hashlib.sha256(hash_input.encode()).hexdigest()
+if stored_hash != computed:
+    print(f'Hash mismatch: stored={stored_hash[:16]}... computed={computed[:16]}...', file=sys.stderr)
+    sys.exit(1)
+"
+}

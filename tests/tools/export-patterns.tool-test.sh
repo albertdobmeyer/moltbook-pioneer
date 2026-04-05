@@ -74,6 +74,24 @@ if result is not None:
 "
 }
 
+test_all_patterns_below_warn_threshold() {
+  # All 25 current patterns must score below the WARN threshold
+  run_export
+  python3 -c "
+import sys
+from importlib.machinery import SourceFileLoader
+mod = SourceFileLoader('export_patterns', '$REPO_ROOT/scripts/export-patterns.py').load_module()
+import yaml
+with open('$EXPORT_FILE') as f:
+    data = yaml.safe_load(f)
+for p in data['patterns']:
+    score = mod.complexity_score(p['regex'])
+    if score >= mod.WARN_THRESHOLD:
+        print(f'FAIL: {p[\"id\"]} scored {score} (WARN threshold: {mod.WARN_THRESHOLD})', file=sys.stderr)
+        sys.exit(1)
+"
+}
+
 test_malicious_content_matches() {
   run_export
   python3 -c "

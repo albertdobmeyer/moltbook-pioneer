@@ -76,6 +76,61 @@ def check_redos(regex_str):
     return walk(parsed)
 
 
+# Complexity thresholds — calibrated so all 25 current patterns are SAFE
+# Max current score: 23976 (enc-004). WARN at 30000 gives 25% headroom.
+WARN_THRESHOLD = 30000
+REJECT_THRESHOLD = 50000
+
+
+def complexity_score(regex_str):
+    """Score a regex for backtracking complexity.
+
+    score = alternation_branches * max_quantifier_bound * nesting_depth
+
+    Low scores are safe. High scores indicate patterns that could be slow
+    on pathological inputs.
+    """
+    try:
+        parsed = sre_parse.parse(regex_str)
+    except Exception:
+        return 0
+
+    def analyze(node_list, depth=1):
+        """Walk AST and compute complexity metrics."""
+        branches = 1
+        max_bound = 1
+        max_depth = depth
+
+        for op, av in node_list:
+            if op == sre_parse.BRANCH:
+                branch_count = len(av[1])
+                branches *= branch_count
+                for branch in av[1]:
+                    b, m, d = analyze(branch, depth)
+                    branches *= b
+                    max_bound = max(max_bound, m)
+                    max_depth = max(max_depth, d)
+            elif op in (sre_parse.MAX_REPEAT, sre_parse.MIN_REPEAT):
+                _min, _max, subpattern = av
+                bound = _max if _max != sre_parse.MAXREPEAT else 999
+                max_bound = max(max_bound, bound)
+                b, m, d = analyze(subpattern, depth + 1)
+                branches *= b
+                max_bound = max(max_bound, m)
+                max_depth = max(max_depth, d)
+            elif op == sre_parse.SUBPATTERN:
+                if av[3]:
+                    b, m, d = analyze(av[3], depth)
+                    branches *= b
+                    max_bound = max(max_bound, m)
+                    max_depth = max(max_depth, d)
+
+        return branches, max_bound, max_depth
+
+    branches, max_bound, max_depth = analyze(parsed)
+    return branches * max_bound * max_depth
+
+
 def parse_patterns(filepath):
     """Parse injection-patterns.yml via raw text extraction.
 
@@ -142,6 +197,15 @@ def main():
             print(f"  REJECT: {pid} — {redos_issue}", file=sys.stderr)
             failures += 1
             continue
+
+        # Complexity scoring
+        score = complexity_score(regex)
+        if score >= REJECT_THRESHOLD:
+            print(f"  REJECT: {pid} — complexity score {score} exceeds {REJECT_THRESHOLD}", file=sys.stderr)
+            failures += 1
+            continue
+        if score >= WARN_THRESHOLD:
+            print(f"  WARN: {pid} — complexity score {score} (threshold {WARN_THRESHOLD})", file=sys.stderr)
 
         exported.append({"id": pid, "severity": severity, "regex": regex})
 

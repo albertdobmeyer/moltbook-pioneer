@@ -1,7 +1,7 @@
 # Moltbook-Pioneer Roadmap
 
 **Updated:** 2026-04-05
-**Current state:** Three tools operational (feed scanner, agent census, identity checklist), 25 injection patterns, 24 behavioral tests passing, pattern export for vault integration, Makefile. Phases 1-4 complete.
+**Current state:** Three tools operational, 25 injection patterns, 24 tests passing, pattern export for vault integration, pattern harmonization documented. **All 5 phases complete.**
 **Cross-reference:** See `docs/trifecta.md` in the lobster-trapp root for how this module fits with openclaw-vault and clawhub-forge.
 
 ---
@@ -73,19 +73,19 @@ Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke gre
 
 ---
 
-## Phase 5: Pattern Harmonization with Forge
+## Phase 5: Pattern Harmonization with Forge — COMPLETE (2026-04-05)
 
-**Why:** Forge has 87 patterns for skill content. Pioneer has 25 patterns for social content. Different domains, different patterns — but the format and tooling could be shared.
+**Full analysis:** `docs/pattern-harmonization.md`
 
-| Task | Details |
-|---|---|
-| Compare pattern formats | Forge uses `tools/lib/patterns.sh` (bash functions). Pioneer uses `config/injection-patterns.yml` (YAML + regex). Assess whether a shared format is beneficial. |
-| Identify overlapping patterns | Are any of pioneer's 25 patterns already covered by forge's 87? Document overlap. |
-| Evaluate shared pattern library | If overlap is significant, consider a shared `patterns/` directory in lobster-trapp root. If not, keep separate. |
+| Finding | Detail |
+|---------|--------|
+| Forge patterns | 87 across 13 categories (supply-chain, execution, persistence, etc.) |
+| Pioneer patterns | 25 across 6 categories (social manipulation, injection, exfiltration, etc.) |
+| Overlap | 8 pattern pairs (~7%) — similar intent but different implementations |
+| Non-overlapping in forge | 79 patterns (command execution, persistence, container escape, etc.) |
+| Non-overlapping in pioneer | 17 patterns (authority impersonation, URL fishing, social engineering) |
 
-**Decision: Don't force convergence.** Skill content and social content have different threat profiles. Shared tooling is only valuable if it reduces maintenance burden without losing domain specificity.
-
-**Exit criteria:** Pattern comparison documented. Decision made (share or keep separate) with rationale.
+**Decision: Keep separate.** Different threat surfaces (social content vs skill code), different consumers (Python re vs bash grep), different format requirements (inline (?i) vs FLAGS field). The 7% overlap doesn't justify a shared format.
 
 ---
 
@@ -100,7 +100,7 @@ Phase 3 (Offline mode) ✅
     ↓
 Phase 4 (Vault integration) ✅ — pattern export ready, vault-side deferred to Phase C
     ↓
-Phase 5 (Pattern harmonization) ← depends on forge pattern access
+Phase 5 (Pattern harmonization) ✅ — keep separate, 7% overlap
 ```
 
 ---

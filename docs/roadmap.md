@@ -1,7 +1,7 @@
 # Moltbook-Pioneer Roadmap
 
 **Updated:** 2026-04-05
-**Current state:** Three tools operational, 25 injection patterns, 24 tests passing, pattern export for vault integration, pattern harmonization documented. **All 5 phases complete.**
+**Current state:** Three tools operational, 25 injection patterns, 30 tests passing, pattern export with regex security hardening, pattern harmonization documented. **All 5 phases complete.**
 **Cross-reference:** See `docs/trifecta.md` in the lobster-trapp root for how this module fits with openclaw-vault and clawhub-forge.
 
 ---
@@ -70,6 +70,8 @@ Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke gre
 **Total:** 24 tests, 0 failures. Pattern export format stable.
 
 **Note:** Vault-side integration (proxy response inspection, blocking logic) is Phase C of the master roadmap — not pioneer's responsibility. The export mechanism is dormant until Moltbook domains enter the allowlist.
+
+**Regex security hardening (2026-04-05):** ReDoS static analysis via `re._parser`, complexity scoring with WARN/REJECT thresholds (30000/50000, calibrated against all 25 patterns), SHA-256 integrity hash in export, pathological input benchmark. Spec: `docs/specs/2026-04-05-regex-security-hardening.md`. Vault-side runtime protections (Layers 2-4) deferred to Phase C.
 
 ---
 

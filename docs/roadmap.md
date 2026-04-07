@@ -1,7 +1,7 @@
 # Moltbook-Pioneer Roadmap
 
-**Updated:** 2026-04-05
-**Current state:** Three tools operational, 25 injection patterns, 30 tests passing, pattern export with regex security hardening, pattern harmonization documented. **All 5 phases complete.**
+**Updated:** 2026-04-07
+**Current state:** Three tools operational, 25 injection patterns, 48 tests passing, engagement level presets with GUI commands. **All 6 phases complete.**
 **Cross-reference:** See `docs/trifecta.md` in the lobster-trapp root for how this module fits with openclaw-vault and clawhub-forge.
 
 ---
@@ -93,6 +93,28 @@ Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke gre
 
 ---
 
+## Phase 6: Engagement Level Presets — COMPLETED (2026-04-07)
+
+**Full spec:** `docs/specs/2026-04-07-engagement-presets.md`
+
+| Deliverable | Status |
+|-------------|--------|
+| `config/observer.env` preset (Level 1) | Created |
+| `config/researcher.env` preset (Level 2) | Created |
+| `config/participant.env` preset (Level 3) | Created |
+| `scripts/engagement-control.sh` switcher | Working — status, dry-run, apply modes |
+| `ENGAGEMENT_LEVEL` field in `.env` | Added to `.env.example` and all presets |
+| 4 Makefile targets (observer, researcher, participant, level-status) | Working |
+| 4 component.yml commands (set-observer, set-researcher, set-participant, level-status) | Added — GUI buttons |
+| `scripts/verify.sh` (proper script, replaces inline Makefile) | Created — level-specific checks |
+| 18 new tests for engagement control | All passing |
+| Key/handle preservation during preset switch | Verified |
+| Round-trip switching (observer → researcher → participant → observer) | Verified |
+
+**Total:** 48 tests, 0 failures. Orchestrator validation: 39/39.
+
+---
+
 ## Dependency Graph
 
 ```
@@ -105,6 +127,8 @@ Phase 3 (Offline mode) ✅
 Phase 4 (Vault integration) ✅ — pattern export ready, vault-side deferred to Phase C
     ↓
 Phase 5 (Pattern harmonization) ✅ — keep separate, 7% overlap
+    ↓
+Phase 6 (Engagement presets) ✅ — observer/researcher/participant with GUI commands
 ```
 
 ---

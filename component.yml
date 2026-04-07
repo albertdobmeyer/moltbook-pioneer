@@ -107,6 +107,22 @@ commands:
     timeout_seconds: 15
 
   # ── Monitoring ──────────────────────────────────────────
+  - id: level-status
+    name: Engagement Status
+    description: Show current engagement level, rate limits, and configuration summary
+    group: monitoring
+    type: query
+    danger: safe
+    command: "bash scripts/engagement-control.sh --status"
+    output:
+      format: ansi
+      display: report
+    available_when:
+      - ready
+      - not_setup
+    sort_order: 5
+    timeout_seconds: 10
+
   - id: identity-check
     name: Identity Checklist
     description: Pre-flight safety check before registering an agent on Moltbook
@@ -124,6 +140,51 @@ commands:
     timeout_seconds: 15
 
   # ── Lifecycle ───────────────────────────────────────────
+  - id: set-observer
+    name: Observer Mode
+    description: "Level 1: Read-only observation. No API key needed, no interaction."
+    group: lifecycle
+    type: action
+    danger: safe
+    command: "bash scripts/engagement-control.sh --level observer --apply"
+    output:
+      format: ansi
+      display: checklist
+    available_when:
+      - ready
+    sort_order: 20
+    timeout_seconds: 10
+
+  - id: set-researcher
+    name: Researcher Mode
+    description: "Level 2: Registered identity with controlled interaction. Feed scanning required."
+    group: lifecycle
+    type: action
+    danger: caution
+    command: "bash scripts/engagement-control.sh --level researcher --apply"
+    output:
+      format: ansi
+      display: checklist
+    available_when:
+      - ready
+    sort_order: 30
+    timeout_seconds: 10
+
+  - id: set-participant
+    name: Participant Mode
+    description: "Level 3: Full interaction with rate limits. Requires retraction plan."
+    group: lifecycle
+    type: action
+    danger: caution
+    command: "bash scripts/engagement-control.sh --level participant --apply"
+    output:
+      format: ansi
+      display: checklist
+    available_when:
+      - ready
+    sort_order: 40
+    timeout_seconds: 10
+
   - id: setup
     name: Setup
     description: Copy example config and prepare working directory

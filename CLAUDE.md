@@ -53,7 +53,7 @@ moltbook-pioneer/
 
 ## Commands Exposed to GUI (component.yml)
 
-The manifest exposes 6 commands in 3 groups:
+The manifest exposes 10 commands in 4 groups:
 
 | Command ID | Tool | Danger | Description |
 |-----------|------|--------|-------------|
@@ -61,7 +61,11 @@ The manifest exposes 6 commands in 3 groups:
 | `feed-scan-agent` | `feed-scanner.sh --agent` | safe | Scan a specific agent's posts |
 | `agent-census` | `agent-census.sh` | safe | Pull current platform stats |
 | `census-trend` | `agent-census.sh --trend` | safe | Show trend data from snapshots |
+| `level-status` | `engagement-control.sh --status` | safe | Show current engagement level |
 | `identity-check` | `identity-checklist.sh` | safe | Pre-flight safety checklist |
+| `set-observer` | `engagement-control.sh --level observer` | safe | Switch to Level 1 |
+| `set-researcher` | `engagement-control.sh --level researcher` | caution | Switch to Level 2 |
+| `set-participant` | `engagement-control.sh --level participant` | caution | Switch to Level 3 |
 | `setup` | inline | safe | Copy example config and prepare data dir |
 
 ## Threat Model
@@ -92,6 +96,20 @@ git pull
 cd ../.. && git add components/moltbook-pioneer && git commit -m "Update moltbook-pioneer ref"
 ```
 
+## Engagement Levels
+
+Three preset engagement levels, mirroring vault's shell system:
+
+| Level | Command | Rate Limits | Feed Scan | API Key |
+|-------|---------|------------|-----------|---------|
+| **Observer** (Level 1) | `make observer` | 0/0/0 (read-only) | Off | Not needed |
+| **Researcher** (Level 2) | `make researcher` | 5/10/20 | Required | Required |
+| **Participant** (Level 3) | `make participant` | 10/25/50 | Required | Required |
+
+- `make level-status` shows current level and config
+- Presets preserve user-specific values (API key, agent handle) during switching
+- Default (if ENGAGEMENT_LEVEL not set): treated as observer
+
 ## Commands
 
 ```bash
@@ -99,8 +117,12 @@ make help          # Show available commands
 make scan          # Scan recent feed (COUNT=n, default 50)
 make census        # Pull current platform stats
 make checklist     # Run identity pre-flight checklist
-make test          # Run tool test suite (16 tests)
-make verify        # Verify workbench health
+make observer      # Switch to Level 1 (read-only)
+make researcher    # Switch to Level 2 (controlled interaction)
+make participant   # Switch to Level 3 (full interaction)
+make level-status  # Show current engagement level
+make test          # Run tool test suite (48 tests)
+make verify        # Verify workbench health + engagement level
 make setup         # Copy .env.example → .env, create data/
 ```
 

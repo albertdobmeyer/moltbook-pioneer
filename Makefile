@@ -1,4 +1,4 @@
-.PHONY: help scan scan-agent census census-trend checklist check-api export-patterns setup test verify
+.PHONY: help scan scan-agent census census-trend checklist check-api export-patterns setup test verify observer researcher participant level-status
 
 TOOLS_DIR := tools
 TESTS_DIR := tests
@@ -30,6 +30,19 @@ check-api: ## Check Moltbook API liveness
 		&& echo "  API: UP (api.moltbook.com responds)" \
 		|| echo "  API: DOWN or unreachable (api.moltbook.com)"
 
+# ── Engagement Levels ──────────────────────────────────
+observer: ## Switch to Level 1 (read-only, no API key)
+	@bash scripts/engagement-control.sh --level observer --apply
+
+researcher: ## Switch to Level 2 (registered, controlled interaction)
+	@bash scripts/engagement-control.sh --level researcher --apply
+
+participant: ## Switch to Level 3 (full interaction with guardrails)
+	@bash scripts/engagement-control.sh --level participant --apply
+
+level-status: ## Show current engagement level and config
+	@bash scripts/engagement-control.sh --status
+
 # ── Export ──────────────────────────────────────────────
 export-patterns: ## Export injection patterns for vault-proxy consumption
 	@mkdir -p data
@@ -48,21 +61,5 @@ test: ## Run tool test suite
 	@bash $(TESTS_DIR)/_framework/tool-runner.sh
 
 # ── Verification ────────────────────────────────────────
-verify: ## Verify workbench health (config, tools, patterns)
-	@echo "Moltbook Pioneer — Health Check"
-	@echo ""
-	@printf "  config/.env              ... " && \
-		(test -f config/.env && echo "OK" || echo "MISSING (run make setup)")
-	@printf "  feed-scanner.sh +x       ... " && \
-		(test -x $(TOOLS_DIR)/feed-scanner.sh && echo "OK" || echo "FAIL")
-	@printf "  agent-census.sh +x       ... " && \
-		(test -x $(TOOLS_DIR)/agent-census.sh && echo "OK" || echo "FAIL")
-	@printf "  identity-checklist.sh +x ... " && \
-		(test -x $(TOOLS_DIR)/identity-checklist.sh && echo "OK" || echo "FAIL")
-	@printf "  injection-patterns.yml   ... " && \
-		(python3 -c "import yaml; d=yaml.safe_load(open('config/injection-patterns.yml')); print(f'OK ({sum(len(v) for v in d.values())} patterns)')" 2>/dev/null || \
-		python3 -c "import json,re; t=open('config/injection-patterns.yml').read(); print('OK (YAML present)')" 2>/dev/null || \
-		echo "FAIL")
-	@printf "  feed-allowlist.yml       ... " && \
-		(test -f config/feed-allowlist.yml && echo "OK" || echo "MISSING")
-	@echo ""
+verify: ## Verify workbench health (config, tools, patterns, engagement level)
+	@bash scripts/verify.sh

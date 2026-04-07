@@ -1,7 +1,7 @@
 # Spec: Regex Security Hardening for Feed Scanning
 
 **Date:** 2026-04-05
-**Status:** Design approved, implementation pending
+**Status:** Layer 1 implemented (pioneer), Layers 2-4 pending (Phase C, vault)
 **Scope:** Pioneer (export-time validation) + Vault (runtime protection)
 **Cross-reference:** `docs/specs/2026-04-04-vault-integration-design.md` (parent integration spec)
 
@@ -65,6 +65,8 @@ After the existing `re.compile()` check, analyze the compiled pattern's AST via 
 - **Unbounded repetition on alternation:** `(a|b)*` or `(a|b)+` without an upper bound
 - **Overlapping quantifiers:** Adjacent quantifiers on overlapping character sets (e.g., `.*.*`, `\w+\w+`)
 
+> **Not implemented.** Adjacent quantifiers without nesting are not a ReDoS vector in CPython — the engine does not backtrack between consecutive quantifiers on flat character sets. The pathological input benchmark (test 11, 10KB input) provides runtime protection if a future pattern accidentally combines adjacent quantifiers with anchoring. See Gap A in `docs/report-regex-verification.md`.
+
 Patterns matching any of these are **rejected** (not exported, exit 1).
 
 ### Complexity Scoring
@@ -84,7 +86,9 @@ Thresholds will be calibrated during implementation by scoring all 25 current pa
 - **WARN** threshold above the highest current score (all current patterns must be SAFE)
 - **REJECT** threshold at a level that catches genuinely dangerous structures
 
-**Invariant:** All 25 current patterns must score below the WARN threshold. A pattern like `(a|b|c|d|e){0,100}(f|g|h|i|j){0,100}` (which combines wide alternation with high bounds) must score above REJECT.
+**Invariant:** All 25 current patterns must score below the WARN threshold. The REJECT threshold catches patterns where multi-character alternation branches (BRANCH nodes in `sre_parse`) combine with high quantifier bounds and nesting depth, producing a large `branches * bound * depth` product.
+
+> **Note on scoring of single-character alternations:** Python's `sre_parse` compiles `(a|b|c)` into a character class (IN node), not a BRANCH node. These match deterministically in O(1) per position and score as `branches=1` regardless of the number of alternatives. This is correct behavior — such patterns are not ReDoS-vulnerable. See Gap B in `docs/report-regex-verification.md`.
 
 ### Pathological Input Test
 

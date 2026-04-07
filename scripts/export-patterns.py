@@ -89,6 +89,10 @@ def complexity_score(regex_str):
 
     Low scores are safe. High scores indicate patterns that could be slow
     on pathological inputs.
+
+    Note: sre_parse compiles single-character alternations like (a|b|c)
+    into character class IN nodes, not BRANCH nodes. These score as
+    branches=1 because they match deterministically — this is correct.
     """
     try:
         parsed = sre_parse.parse(regex_str)

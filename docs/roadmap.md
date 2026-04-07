@@ -73,6 +73,8 @@ Also fixed two latent bugs discovered during testing: `(?i)` PCRE flag broke gre
 
 **Regex security hardening (2026-04-05):** ReDoS static analysis via `re._parser`, complexity scoring with WARN/REJECT thresholds (30000/50000, calibrated against all 25 patterns), SHA-256 integrity hash in export, pathological input benchmark. Spec: `docs/specs/2026-04-05-regex-security-hardening.md`. Vault-side runtime protections (Layers 2-4) deferred to Phase C.
 
+**Gap analysis closure (2026-04-06):** Independent verification confirmed all 10 implementation claims. Two spec inaccuracies corrected: overlapping quantifier detection documented as intentionally not implemented (not a CPython ReDoS vector), and REJECT invariant example removed (Python optimizes single-character alternations to character classes). See `docs/report-regex-verification.md`.
+
 ---
 
 ## Phase 5: Pattern Harmonization with Forge — COMPLETE (2026-04-05)

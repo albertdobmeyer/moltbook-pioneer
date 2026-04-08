@@ -8,7 +8,7 @@ identity:
   role: network
   icon: users
   color: "#a855f7"
-  repo: https://github.com/gitgoodordietrying/moltbook-pioneer
+  repo: https://github.com/albertdobmeyer/moltbook-pioneer
 
 status:
   states:

@@ -4,7 +4,7 @@
 
 Navigate the Moltbook agentic social network — as a researcher and as a participant — without getting your agent hijacked.
 
-**Author**: [@gitgoodordietrying](https://github.com/gitgoodordietrying)
+**Author**: [@albertdobmeyer](https://github.com/albertdobmeyer)
 
 ---
 
@@ -42,7 +42,7 @@ No existing guide covers how to safely participate in this environment. This pro
 
 - **Researchers** studying agentic social networks, emergent agent behavior, and prompt injection at social scale
 - **Developers** building agents that interact on Moltbook and need safety guardrails
-- **NOT for**: casual browsing (just use moltbook.com), running untrusted Moltbook skills (use [openclaw-vault](https://github.com/gitgoodordietrying/openclaw-vault))
+- **NOT for**: casual browsing (just use moltbook.com), running untrusted Moltbook skills (use [openclaw-vault](https://github.com/albertdobmeyer/openclaw-vault))
 
 ---
 
@@ -80,7 +80,7 @@ Full interaction with content safety guardrails. Automated posting with rate lim
 
 ```bash
 # 1. Clone and configure
-git clone https://github.com/gitgoodordietrying/moltbook-pioneer.git
+git clone https://github.com/albertdobmeyer/moltbook-pioneer.git
 cd moltbook-pioneer
 cp config/.env.example config/.env
 # Edit config/.env — set MOLTBOOK_API_BASE (no API key needed for read-only)
@@ -181,8 +181,8 @@ These three repos cover safe engagement with the OpenClaw/ClawHub/Moltbook ecosy
 
 | Repo | Layer | What It Does |
 |------|-------|-------------|
-| **[openclaw-vault](https://github.com/gitgoodordietrying/openclaw-vault)** | Runtime | Run agents safely. Hardened container with proxy-side API key injection, domain allowlisting, kill switch |
-| **[clawhub-forge](https://github.com/gitgoodordietrying/clawhub-forge)** | Development | Build skills safely. Offline linter, scanner, test framework, gated publishing pipeline |
+| **[openclaw-vault](https://github.com/albertdobmeyer/openclaw-vault)** | Runtime | Run agents safely. Hardened container with proxy-side API key injection, domain allowlisting, kill switch |
+| **[clawhub-forge](https://github.com/albertdobmeyer/clawhub-forge)** | Development | Build skills safely. Offline linter, scanner, test framework, gated publishing pipeline |
 | **moltbook-pioneer** | Social | Socialize safely. Research and safe participation in the Moltbook agentic social network (you are here) |
 
 ---

@@ -10,7 +10,7 @@
 
 **Spec:** `docs/specs/2026-04-05-regex-security-hardening.md`
 
-**Working directory:** `/home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer/`
+**Working directory:** `moltbook-pioneer repo root`
 
 ---
 
@@ -59,7 +59,7 @@ if result is None:
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer && make test`
+Run: `cd components/moltbook-pioneer && make test`
 
 Expected: `test_redos_pattern_is_rejected` FAILS because `check_redos` function doesn't exist yet.
 
@@ -161,7 +161,7 @@ In `scripts/export-patterns.py`, in the `main()` function, after the `re.compile
 
 - [ ] **Step 5: Run tests to verify all pass**
 
-Run: `cd /home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer && make test`
+Run: `cd components/moltbook-pioneer && make test`
 
 Expected: All tests pass including `test_redos_pattern_is_rejected`. The existing 25 patterns must all still pass (they are ReDoS-safe).
 
@@ -187,14 +187,14 @@ if result is not None:
 
 - [ ] **Step 7: Run tests**
 
-Run: `cd /home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer && make test`
+Run: `cd components/moltbook-pioneer && make test`
 
 Expected: All pass.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer
+cd components/moltbook-pioneer
 git add scripts/export-patterns.py tests/tools/export-patterns.tool-test.sh
 git commit -m "feat: add ReDoS static analysis to pattern export
 
@@ -322,7 +322,7 @@ In `scripts/export-patterns.py`, in `main()`, after the ReDoS check and before `
 
 - [ ] **Step 5: Calibrate thresholds**
 
-Run: `cd /home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer && python3 -c "
+Run: `cd components/moltbook-pioneer && python3 -c "
 import sys
 from importlib.machinery import SourceFileLoader
 mod = SourceFileLoader('ep', 'scripts/export-patterns.py').load_module()

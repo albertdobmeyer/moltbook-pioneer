@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-05
 **For:** A fresh Claude instance verifying all claims from the implementation session
-**Working directory:** `/home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer/`
+**Working directory:** `moltbook-pioneer repo root`
 
 ## What Was Built (This Session)
 

@@ -125,5 +125,5 @@ Gap A does not affect current patterns and is not a real threat without nested q
 
 ---
 
-*Verified from: `/home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer/`*
+*Verified from: `moltbook-pioneer repo root`*
 *Commits reviewed: `58adf3f`..`220887d` on main*

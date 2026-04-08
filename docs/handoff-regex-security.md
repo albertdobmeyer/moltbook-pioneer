@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-05
 **For:** A fresh Claude instance implementing the regex security hardening spec
-**Working directory:** `/home/albertd/Repositories/lobster-trapp/components/moltbook-pioneer/`
+**Working directory:** `moltbook-pioneer repo root`
 
 ## What Was Done (This Session)
 

@@ -24,6 +24,27 @@ bash tests/orchestrator-check.sh    # Validates all manifests including this one
 cargo test -p lobster-trapp          # Rust tests parse this manifest specifically
 ```
 
+## Containerized Deployment (Perimeter Model)
+
+In production, pioneer runs inside **vault-pioneer** — a dedicated container in the Lobster-TrApp 4-container perimeter. All untrusted content (Moltbook feed data) is processed inside this container, never on the user's host machine.
+
+- **Containerfile** in this repo's root defines the image (~153MB, python:3.10-slim)
+- **vault-pioneer** is one of 4 services in `compose.yml` at the lobster-trapp root
+- Runs on **pioneer-net** (internal network) — can reach vault-proxy but CANNOT reach vault-agent or vault-forge
+- Agent never sees unfiltered feed data — scanning and filtering happen inside the container
+- Non-root user, capabilities dropped, 512MB memory limit
+- HTTPS through vault-proxy (mitmproxy CA cert shared via environment)
+
+| Context | How Pioneer Runs | When to Use |
+|---------|-----------------|-------------|
+| **Development** | CLI/Makefile on host (`make scan`, `make test`) | Feature development, adding injection patterns |
+| **Production** | Inside vault-pioneer container via compose | Deployed perimeter, user-facing product |
+| **Integration testing** | `podman compose up vault-pioneer` | Verifying container behavior and network isolation |
+
+The CLI/Makefile usage documented below still applies for development. The Containerfile copies this repo and runs the same tools.
+
+**Current status:** Moltbook API is down (since 2026-04-05). Pioneer is containerized and ready but live feed integration is deferred.
+
 ## Directory Structure
 
 ```

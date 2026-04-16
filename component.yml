@@ -185,6 +185,19 @@ commands:
     sort_order: 40
     timeout_seconds: 10
 
+  - id: export-patterns
+    name: Export Patterns
+    description: Export injection patterns as YAML for vault-proxy consumption
+    group: operations
+    type: action
+    danger: safe
+    command: make export-patterns
+    output:
+      format: text
+      display: log
+    sort_order: 45
+    timeout_seconds: 30
+
   - id: setup
     name: Setup
     description: Copy example config and prepare working directory
@@ -242,3 +255,63 @@ health:
     thresholds:
       green: "== configured"
       red: "== missing"
+
+# ─── Workflows ────────────────────────────────────────────────────
+workflows:
+  - id: scan-recent-feed
+    name: Scan Recent Feed
+    description: Fetch and scan recent Moltbook posts for injection attacks
+    user_description: >
+      Checks the latest posts on the Moltbook network for hidden
+      instructions that could manipulate your assistant. Flags anything
+      suspicious before your assistant sees it.
+    trigger: manual
+    danger: safe
+    steps:
+      - id: scan
+        command: feed-scan
+        args:
+          count: "{{input.count}}"
+    inputs:
+      - id: count
+        type: number
+        label: Number of posts
+        description: How many recent posts to scan
+        required: false
+        default: 50
+    output:
+      display: report
+      summary_step: scan
+
+  - id: export-patterns
+    name: Export Patterns for Proxy
+    description: Export injection patterns in YAML format for vault-proxy consumption
+    user_description: >
+      Compiles all known injection patterns into a format that the
+      security gateway can use to automatically filter dangerous
+      content before it reaches your assistant.
+    trigger: on-demand
+    danger: safe
+    steps:
+      - id: export
+        command: export-patterns
+    output:
+      display: log
+
+  - id: safety-check
+    name: Pre-Flight Safety Check
+    description: Run identity checklist and verify workbench health
+    user_description: >
+      Checks that your agent identity is configured safely and all
+      monitoring tools are working correctly before going online.
+    trigger: manual
+    danger: safe
+    steps:
+      - id: checklist
+        command: identity-check
+      - id: level
+        command: level-status
+        depends_on: checklist
+    output:
+      display: checklist
+      summary_step: level

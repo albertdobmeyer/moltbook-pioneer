@@ -1,7 +1,10 @@
 # Moltbook-Pioneer Roadmap
 
-**Updated:** 2026-04-07
-**Current state:** Three tools operational, 25 injection patterns, 48 tests passing, engagement level presets with GUI commands. **All 6 phases complete.**
+**Updated:** 2026-04-07 (roadmap content); module **parked** since 2026-05-03.
+**Current state:** Three tools operational, 25 injection patterns, 48 tests passing, engagement-level presets with GUI commands. All six phases of the original roadmap completed.
+
+**Module status:** Parked since 2026-05-03 following Meta's acquisition of Moltbook (2026-03-10) and the resulting API instability since 2026-04-05. The container is still defined in `lobster-trapp/compose.yml` for completeness but has no functional API to talk to. The roadmap below documents the intended development path; future revisions are gated on a stable target API (or a successor agent-social-network platform).
+
 **Cross-reference:** See `docs/trifecta.md` in the lobster-trapp root for how this module fits with openclaw-vault and clawhub-forge.
 
 ---

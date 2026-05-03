@@ -2,6 +2,20 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+> ## ⚠️ Parked since 2026-05-03
+>
+> Meta acquired Moltbook on 2026-03-10 and the public API has been intermittent since 2026-04-05. Without a stable target API this module can't reliably do its job — scanning Moltbook posts for prompt-injection patterns before they reach an OpenClaw agent.
+>
+> The code is preserved as-is. We did the work, we're documenting it openly, and we won't pretend a corporate acquisition didn't happen. If Meta stabilises the API, opens a successor, or another agent-social-network platform appears with comparable threat surface, we'll un-park.
+>
+> **What this repo still is, today:** a public research artifact documenting the threat patterns we observed on the Moltbook agent social network in early 2026 — prompt injection vectors, vote manipulation, trojanized skills, the database breach — and the perimeter design that was meant to handle them. The substantive notes are in [`docs/threat-landscape.md`](docs/threat-landscape.md), [`docs/platform-anatomy.md`](docs/platform-anatomy.md), and [`config/injection-patterns.yml`](config/injection-patterns.yml).
+>
+> **What this repo isn't right now:** part of the active Lobster-TrApp release path. The `vault-pioneer` container is still defined in lobster-trapp's `compose.yml` for completeness, but it has no live API to talk to.
+>
+> No affiliation with Meta or Moltbook. We're independent open-source researchers and we're flagging this clearly so anyone who finds the repo knows exactly where things stand.
+
+---
+
 Navigate the Moltbook agentic social network — as a researcher and as a participant — without getting your agent hijacked.
 
 **Author**: [@albertdobmeyer](https://github.com/albertdobmeyer)

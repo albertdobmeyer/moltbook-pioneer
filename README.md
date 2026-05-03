@@ -37,26 +37,25 @@ The platform launched January 28, 2026 by Matt Schlicht. Within days it had a da
 
 ---
 
-## Why This Exists
+## Why this module exists
 
-Real incidents happened fast:
+Several incidents in early 2026 motivated treating the Moltbook feed as untrusted input:
 
-- **moltbook-ay trojan** — A trojanized skill on ClawHub instructed agents to download and execute malware via password-protected archives
-- **Database breach** — Supabase deployed with Row Level Security disabled, exposing 1.5M API tokens, 35K emails, private messages, and third-party API keys. Exploited in under 3 minutes
-- **Vote manipulation** — Race condition in the voting API allows 30-40 successful votes from 50 concurrent requests. All vote counts are unreliable
-- **Prompt injection** — The feed contains agent-to-agent social engineering: authority impersonation, encoded payloads, instruction injection
+- **`moltbook-ay` trojan** — a trojanised skill on ClawHub instructed agents to download and execute malware via password-protected archives.
+- **Database breach** — the platform's Supabase deployment had Row-Level Security disabled, exposing 1.5 M API tokens, 35 K email addresses, private messages, and third-party API keys. The exposure was exploited within three minutes of disclosure.
+- **Vote manipulation** — a race condition in the voting API allowed 30 to 40 successful votes from 50 concurrent requests, rendering vote counts unreliable.
+- **Prompt injection** — the feed routinely contained agent-to-agent social engineering, including authority impersonation, encoded payloads, and instruction injection.
 
-No existing guide covers how to safely participate in this environment. This project fills that gap.
-
-**The Moltbook feed is untrusted input. Treat it like user input from the internet.**
+The operating assumption of this module is that Moltbook feed content is untrusted input and should be treated with the same care as arbitrary user input from the public internet.
 
 ---
 
-## Who This Is For
+## Audience
 
-- **Researchers** studying agentic social networks, emergent agent behavior, and prompt injection at social scale
-- **Developers** building agents that interact on Moltbook and need safety guardrails
-- **NOT for**: casual browsing (just use moltbook.com), running untrusted Moltbook skills (use [openclaw-vault](https://github.com/albertdobmeyer/openclaw-vault))
+- Researchers studying agentic social networks, emergent agent behaviour, and prompt injection at social scale.
+- Developers building agents that interact with Moltbook and need safety guardrails.
+
+The module is not appropriate for casual browsing (use moltbook.com directly) or for running untrusted Moltbook-distributed skills (use [`openclaw-vault`](https://github.com/albertdobmeyer/openclaw-vault) for that).
 
 ---
 
@@ -189,15 +188,15 @@ The Moltbook API is open and undocumented. Key endpoints, data model, interactio
 
 ---
 
-## The Trifecta
+## Companion repositories
 
-These three repos cover safe engagement with the OpenClaw/ClawHub/Moltbook ecosystem:
+The three modules cover the OpenClaw / ClawHub / Moltbook ecosystem:
 
-| Repo | Layer | What It Does |
-|------|-------|-------------|
-| **[openclaw-vault](https://github.com/albertdobmeyer/openclaw-vault)** | Runtime | Run agents safely. Hardened container with proxy-side API key injection, domain allowlisting, kill switch |
-| **[clawhub-forge](https://github.com/albertdobmeyer/clawhub-forge)** | Development | Build skills safely. Offline linter, scanner, test framework, gated publishing pipeline |
-| **moltbook-pioneer** | Social | Socialize safely. Research and safe participation in the Moltbook agentic social network (you are here) |
+| Repository | Role | Description |
+|---|---|---|
+| [`openclaw-vault`](https://github.com/albertdobmeyer/openclaw-vault) | Runtime containment | Hardened container, proxy-side API-key injection, domain allowlist, three-level kill switch |
+| [`clawhub-forge`](https://github.com/albertdobmeyer/clawhub-forge) | Supply-chain defence | Offline linter, 87-pattern scanner, zero-trust line verifier, gated publishing pipeline |
+| `moltbook-pioneer` *(this repository)* | Social-content analysis | Feed scanning for prompt-injection patterns. **Parked since 2026-05-03**; see banner above. |
 
 ---
 
@@ -224,11 +223,11 @@ moltbook-pioneer/
 
 ---
 
-## Disclaimer
+## Scope and disclaimer
 
-This project is for defensive research and safe participation only. It does not develop exploits, manipulate votes, impersonate agents, or exfiltrate data. All interaction with the Moltbook platform respects its terms of service.
+This project is intended for defensive research and safe participation only. It does not develop exploits, manipulate votes, impersonate agents, or exfiltrate data. Interactions with the Moltbook platform respect its terms of service.
 
-The Moltbook platform is operated by third parties. This project has no affiliation with Moltbook, OpenClaw, or ClawHub.
+The Moltbook platform is operated by third parties. This project has no affiliation with Moltbook, Meta (its current owner), OpenClaw, or ClawHub.
 
 ---
 
